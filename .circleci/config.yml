@@ -9,30 +9,30 @@ parameters:
   run-setup:
     type: boolean
     default: true
-  run-module-a:
+  run-amazon-linux:
     type: boolean
     default: false
-  run-module-b:
+  run-windows:
     type: boolean
     default: false
 
 jobs:
-  module-a:
+  amazon-linux:
     docker:
       - image: alpine
     steps:
       - checkout
-      - run: "echo 'Hello from module A!'"
-      - run: cat module-a/README.md
+      - run: "echo 'Hello from Amazon Linux!'"
+      - run: cat amazon-linux/README.md
 
-  module-b:
+  windows:
     machine: true
     steps:
       - checkout
-      - run: "echo 'Hello from module B!'"
-      - run: cat module-b/README.md
+      - run: "echo 'Hello from Windows!'"
+      - run: cat windows/README.md
 
-  module-b-post:
+  windows-b-post:
     docker:
       - image: alpine
     steps:
@@ -51,16 +51,16 @@ workflows:
           # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
             .* run-setup false
-            module-a/.* run-module-a true
-            module-b/.* run-module-b true
-  module-a:
-    when: << pipeline.parameters.run-module-a >>
+            amazon-linux/.* run-amazon-linux true
+            windows/.* run-windows true
+  amazon-linux:
+    when: << pipeline.parameters.run-amazon-linux >>
     jobs:
-      - module-a
-  module-b:
-    when: << pipeline.parameters.run-module-b >>
+      - amazon-linux
+  windows:
+    when: << pipeline.parameters.run-windows >>
     jobs:
-      - module-b
-      - module-b-post:
+      - windows
+      - windows-b-post:
           requires:
-            - module-b
+            - windows
