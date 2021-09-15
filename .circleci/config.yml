@@ -9,30 +9,30 @@ parameters:
   run-setup:
     type: boolean
     default: true
-  run-amazon-linux:
+  run-frontend:
     type: boolean
     default: false
-  run-windows:
+  run-backend:
     type: boolean
     default: false
 
 jobs:
-  amazon-linux:
+  frontend:
     docker:
       - image: alpine
     steps:
       - checkout
-      - run: "echo 'Hello from Amazon Linux!'"
-      - run: cat amazon-linux/README.md
+      - run: "echo 'Hello from Frontend!'"
+      - run: cat frontend/README.md
 
-  windows:
+  backend:
     machine: true
     steps:
       - checkout
-      - run: "echo 'Hello from Windows!'"
-      - run: cat windows/README.md
+      - run: "echo 'Hello from Backend!'"
+      - run: cat backend/README.md
 
-  windows-b-post:
+  backend-build-job:
     docker:
       - image: alpine
     steps:
@@ -51,16 +51,16 @@ workflows:
           # 3-column space-separated table for mapping; `path-to-test parameter-to-set value-for-parameter` for each row
           mapping: |
             .* run-setup false
-            amazon-linux/.* run-amazon-linux true
-            windows/.* run-windows true
-  amazon-linux:
-    when: << pipeline.parameters.run-amazon-linux >>
+            frontend/.* run-frontend true
+            backend/.* run-backend true
+  frontend:
+    when: << pipeline.parameters.run-frontend >>
     jobs:
-      - amazon-linux
-  windows:
-    when: << pipeline.parameters.run-windows >>
+      - frontend
+  backend:
+    when: << pipeline.parameters.run-backend >>
     jobs:
-      - windows
-      - windows-b-post:
+      - backend
+      - backend-build-job:
           requires:
-            - windows
+            - backend
